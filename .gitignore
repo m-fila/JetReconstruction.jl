@@ -39,3 +39,9 @@ benchmark/*
 
 # Compiled packages
 JetReconstructionCompiled
+
+build/
+install/
+.venv
+html/
+latex/
