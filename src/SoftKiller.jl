@@ -35,7 +35,7 @@ mutable struct SoftKiller <: TilingBase
 end
 
 tile_index(sk::SoftKiller,
-           p::PseudoJet)::Int64 = begin
+p::PseudoJet)::Int64 = begin
     y_minus_ymin = rapidity(p) - sk._ymin
     if y_minus_ymin < 0
         return -1
@@ -46,12 +46,12 @@ tile_index(sk::SoftKiller,
         return -1
     end
 
-    iphi = round(Int64, phi(p)*sk._inverse_dphi)
+    iphi = round(Int64, phi(p) * sk._inverse_dphi)
     if iphi == sk._nphi
         iphi = 0
     end
 
-    res = round(Int64, iy*sk._nphi + iphi)
+    res = round(Int64, iy * sk._nphi + iphi)
 
     res + 1
 end
@@ -61,16 +61,16 @@ function _setup_grid(sk::SoftKiller)
     @assert sk._requested_drap > 0
     @assert sk._requested_dphi > 0
 
-    ny_double = (sk._ymax-sk._ymin) / sk._requested_drap
-    sk._ny = max(round(Int64, ny_double+0.5), 1)
-    sk._dy = (sk._ymax-sk._ymin) / sk._ny
-    sk._inverse_dy = sk._ny/(sk._ymax-sk._ymin)
+    ny_double = (sk._ymax - sk._ymin) / sk._requested_drap
+    sk._ny = max(round(Int64, ny_double + 0.5), 1)
+    sk._dy = (sk._ymax - sk._ymin) / sk._ny
+    sk._inverse_dy = sk._ny / (sk._ymax - sk._ymin)
 
     sk._nphi = round(Int64, (2 * π) / sk._requested_dphi + 0.5)
     sk._dphi = (2 * π) / sk._nphi
-    sk._inverse_dphi = sk._nphi/(2*π)
+    sk._inverse_dphi = sk._nphi / (2 * π)
 
-    @assert sk._ny >= 1 and sk._nphi >= 1
+    @assert sk._ny>=1 and sk._nphi>=1
 
     sk._ntotal = sk._nphi * sk._ny
     sk._cell_area = sk._dy * sk._dphi
@@ -109,7 +109,7 @@ tile_area(sk::SoftKiller, itile::Int64)::Float64 = begin
 end
 
 mean_tile_area(sk::SoftKiller)::Float64 = begin
-    sk._dphi*sk._dy
+    sk._dphi * sk._dy
 end
 
 is_initialized(sk::SoftKiller)::Bool = begin
@@ -129,7 +129,7 @@ function apply(sk::SoftKiller, event::Vector{PseudoJet}, reduced_event::Vector{P
         throw("SoftKiller not properly initialised.")
     end
 
-    @assert all_tiles_equal_area() 
+    @assert all_tiles_equal_area()
 
     #fills the lector of length n_tiles with 0's
     max_pt2 = fill(0.0, n_tiles(sk))
@@ -149,7 +149,7 @@ function apply(sk::SoftKiller, event::Vector{PseudoJet}, reduced_event::Vector{P
     sort!(max_pt2)
 
     int_median_pos = length(max_pt2) ÷ 2
-    pt2cut = (1+1e-12)*max_pt2[int_median_pos]
+    pt2cut = (1 + 1e-12) * max_pt2[int_median_pos]
 
     indices = Int64[]
     for (i, ps_jet) in enumerate(event)
@@ -163,7 +163,7 @@ function apply(sk::SoftKiller, event::Vector{PseudoJet}, reduced_event::Vector{P
         reduced_event[i] = event[idx]
     end
 
-    pt_threshold = sqrt(pt2cut);
+    pt_threshold = sqrt(pt2cut)
 
     return reduced_event, pt_threshold
 end
