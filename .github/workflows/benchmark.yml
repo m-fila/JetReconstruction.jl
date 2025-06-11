@@ -1,0 +1,28 @@
+name: Benchmark
+on:
+  pull_request:
+    branches:
+      - main
+permissions:
+  pull-requests: write    # action needs to post a comment
+
+jobs:
+  benchmark:
+    name: Julia ${{ matrix.version }} - ${{ matrix.platform.os }} - ${{ matrix.platform.arch }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: ubuntu-latest
+            arch: x64
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+        version:
+          - '1'
+          - 'lts'
+    steps:
+      - uses: MilesCranmer/AirspeedVelocity.jl@action-v1
+        with:
+          julia-version: ${{ matrix.version }}
+          job-summary: 'false' # true for table in job summary, false for comment
